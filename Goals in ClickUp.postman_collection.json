@@ -1,0 +1,1489 @@
+{
+	"info": {
+		"_postman_id": "cd9e28e4-949c-420b-802c-9d372e28b99a",
+		"name": "Goals in ClickUp",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "13245101"
+	},
+	"item": [
+		{
+			"name": "Create goal",
+			"item": [
+				{
+					"name": "Create Goal succesful cases",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var response = pm.response.json();",
+									"var requestData = JSON.parse(pm.request.body.raw);",
+									"",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"'id' is a valid UUID\", function () {",
+									"    pm.expect(response.goal.id).to.match(/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/);",
+									"",
+									"    pm.collectionVariables.set(\"goal_id\", response.goal.id);",
+									"});",
+									"",
+									"pm.test(\"Goal name and description match the request\", function () {",
+									"    pm.expect(response.goal.name).to.eql(requestData.name);",
+									"    pm.expect(response.goal.description).to.eql(requestData.description);",
+									"});",
+									"",
+									"pm.test(\"Created goal is public by default\", function () {",
+									"    pm.expect(response.goal.private).to.be.false;",
+									"});",
+									"",
+									"pm.test(\"Created goal is not archived by default\", function () {",
+									"    pm.expect(response.goal.archived).to.be.false;",
+									"});",
+									"",
+									"pm.test(\"Created goal belongs to request team_id\", function () {",
+									"    const teamId = pm.environment.get(\"team_id\");",
+									"",
+									"    pm.expect(response.goal.team_id).to.eql(teamId);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "pk_2144427794_Q5FRM2SEKK7E6AJGM7KXCQWXZVTZQLQ1"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"{{goal_name}}\",\n    \"due_date\": 1568036964079,\n    \"description\": \"{{goal_name}} Description\",\n    \"multiple_owners\": true,\n    \"owners\": [ ],\n    \"color\": \"#32a852\"\n  }"
+						},
+						"url": "{{base_url}}/team/{{team_id}}/goal"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Goal with invalid params in request body NC",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var response = pm.response.json();",
+									"",
+									"pm.test(\"Verify user can create nameless goal\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});// I personally think this is a bug"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "pk_2144427794_Q5FRM2SEKK7E6AJGM7KXCQWXZVTZQLQ1"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": 1,\n    \"due_date\": 0,\n    \"description\": \"\",\n    \"multiple_owners\": 0,\n    \"owners\": [  ],\n    \"color\": \"\"\n  }"
+						},
+						"url": "{{base_url}}/team/{{team_id}}/goal"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Goal invalid user NC",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"",
+									"pm.test(\"Validate error if the passed team does not exists\", function () {",
+									"    var jsonData = pm.response.json();",
+									"",
+									"    pm.expect(jsonData).to.have.property('err');",
+									"    pm.expect(jsonData.err).to.eql(\"Team not found\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "pk_2144427794_Q5FRM2SEKK7E6AJGM7KXCQWXZVTZQLQ1"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"{{goal_name}}\",\n    \"due_date\": 1568036964079,\n    \"description\": \"Description\",\n    \"multiple_owners\": true,\n    \"owners\": [ 1 ],\n    \"color\": \"#32a852\"\n  }"
+						},
+						"url": "{{base_url}}/team/{{team_id}}/goal"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Goal",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "pk_2144427794_Q5FRM2SEKK7E6AJGM7KXCQWXZVTZQLQ1"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": "{{base_url}}/goal/{{goal_id}}"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Get goal",
+			"item": [
+				{
+					"name": "Get Goal  NC",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"",
+									"var response = pm.response.json();",
+									"",
+									"pm.test(\"Status code is 404\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"",
+									"pm.test(\"Validate error if the passed goal_id does not exists\", function () {",
+									"    var jsonData = pm.response.json();",
+									"",
+									"    pm.expect(jsonData).to.have.property('err');",
+									"    pm.expect(jsonData.err).to.eql(\"Goal Not Found\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "pk_2144427794_Q5FRM2SEKK7E6AJGM7KXCQWXZVTZQLQ1"
+							}
+						],
+						"url": "{{base_url}}/goal/{{goal_id}}"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Goal",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var response = pm.response.json();",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"",
+									"    pm.collectionVariables.set(\"goal_id\", response.goal.id);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "pk_2144427794_Q5FRM2SEKK7E6AJGM7KXCQWXZVTZQLQ1"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"{{goal_name}}\",\n    \"due_date\": 1568036964079,\n    \"description\": \"{{goal_name}} Description\",\n    \"multiple_owners\": true,\n    \"owners\": [ ],\n    \"color\": \"#32a852\"\n  }"
+						},
+						"url": "{{base_url}}/team/{{team_id}}/goal"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Goal",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var response = pm.response.json();",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Returned goal ID matches requested goal ID\", function () {",
+									"    var requestedGoalId = pm.variables.get(\"goal_id\");",
+									"    pm.expect(response.goal.id).to.eql(requestedGoalId);",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "pk_2144427794_Q5FRM2SEKK7E6AJGM7KXCQWXZVTZQLQ1"
+							}
+						],
+						"url": "{{base_url}}/goal/{{goal_id}}"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Goal",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "pk_2144427794_Q5FRM2SEKK7E6AJGM7KXCQWXZVTZQLQ1"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": "{{base_url}}/goal/{{goal_id}}"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Get goals",
+			"item": [
+				{
+					"name": "Get Goals NG",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var response = pm.response.json();",
+									"",
+									"pm.test(\"Status code is 401\", function () {",
+									"    pm.response.to.have.status(401);",
+									"});",
+									"",
+									"pm.test(\"Validate error if the passed goal_id does not exists\", function () {",
+									"    var jsonData = pm.response.json();",
+									"",
+									"    pm.expect(jsonData).to.have.property('err');",
+									"    pm.expect(jsonData.err).to.eql(\"Team not authorized\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": {
+								"in": "header",
+								"value": "pk_2144427794_Q5FRM2SEKK7E6AJGM7KXCQWXZVTZQLQ1",
+								"key": "Authorization"
+							}
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "pk_2144427794_Q5FRM2SEKK7E6AJGM7KXCQWXZVTZQLQ1"
+							}
+						],
+						"url": "{{base_url}}/team/1/goal"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Goal",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var response = pm.response.json();",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"",
+									"    pm.collectionVariables.set(\"goal_id\", response.goal.id);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "pk_2144427794_Q5FRM2SEKK7E6AJGM7KXCQWXZVTZQLQ1"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"{{goal_name}}\",\n    \"due_date\": 1568036964079,\n    \"description\": \"{{goal_name}} Description\",\n    \"multiple_owners\": true,\n    \"owners\": [ ],\n    \"color\": \"#32a852\"\n  }"
+						},
+						"url": "{{base_url}}/team/{{team_id}}/goal"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Goals SC",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var response = pm.response.json();",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response contains an array of goals\", function () {",
+									"    pm.expect(response.goals).to.be.an('array');",
+									"});",
+									"",
+									"pm.test(\"All goals belong to the correct team\", function () {",
+									"    const teamId = pm.environment.get(\"team_id\");",
+									"",
+									"    response.goals.forEach(function(goal) {",
+									"        pm.expect(goal.team_id).to.eql(teamId);",
+									"    });",
+									"});",
+									"",
+									"pm.test(\"'due_date' is a valid timestamp or null\", function () {",
+									"    response.goals.forEach(function(goal) {",
+									"        if (goal.due_date !== null) {",
+									"            pm.expect(new Date(parseInt(goal.due_date)).getTime()).to.be.a('number');",
+									"        } else {",
+									"            pm.expect(goal.due_date).to.be.null;",
+									"        }",
+									"    });",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": {
+								"in": "header",
+								"value": "pk_2144427794_Q5FRM2SEKK7E6AJGM7KXCQWXZVTZQLQ1",
+								"key": "Authorization"
+							}
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "pk_2144427794_Q5FRM2SEKK7E6AJGM7KXCQWXZVTZQLQ1"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/team/{{team_id}}/goal?include_completed=true",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"team",
+								"{{team_id}}",
+								"goal"
+							],
+							"query": [
+								{
+									"key": "include_completed",
+									"value": "true"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Goal",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "pk_2144427794_Q5FRM2SEKK7E6AJGM7KXCQWXZVTZQLQ1"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": "{{base_url}}/goal/{{goal_id}}"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Update goal",
+			"item": [
+				{
+					"name": "Create Goal",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var response = pm.response.json();",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"",
+									"    pm.collectionVariables.set(\"goal_id\", response.goal.id);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "pk_2144427794_Q5FRM2SEKK7E6AJGM7KXCQWXZVTZQLQ1"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"{{goal_name}}\",\n    \"due_date\": 1568036964079,\n    \"description\": \"{{goal_name}} Description\",\n    \"multiple_owners\": true,\n    \"owners\": [ ],\n    \"color\": \"#32a852\"\n  }"
+						},
+						"url": "{{base_url}}/team/{{team_id}}/goal"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Goal",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var response = pm.response.json();",
+									"const requestData = JSON.parse(pm.request.body.raw);",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Goal name and description is updated respectfully\", function () {",
+									"    pm.expect(response.goal.name).to.eql(requestData.name);",
+									"    pm.expect(response.goal.description).to.eql(requestData.description);",
+									"});",
+									"",
+									"pm.test(\"Goal due_date is updated\", function () {",
+									"    pm.expect(response.goal.due_date).to.eql(requestData.due_date.toString()); ",
+									"});",
+									"",
+									"pm.test(\"Goal color is updated respectfully\", function () {",
+									"    pm.expect(response.goal.color).to.eql(requestData.color);",
+									"});",
+									"",
+									"pm.test(\"Goal ID matches the requested goal ID\", function () {",
+									"    var requestedGoalId = pm.variables.get(\"goal_id\"); ",
+									"    ",
+									"    pm.expect(response.goal.id).to.eql(requestedGoalId);",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "pk_2144427794_Q5FRM2SEKK7E6AJGM7KXCQWXZVTZQLQ1"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Updated {{$randomAbbreviation}}\",\n    \"due_date\": 0,\n    \"description\": \"Updated {{$randomAbbreviation}} Description\",\n    \"rem_owners\": [\"1\"\n    ],\n    \"add_owners\": [\n    ],\n    \"color\": \"#fffff\"\n  }"
+						},
+						"url": "{{base_url}}/goal/{{goal_id}}"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Goal",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "pk_2144427794_Q5FRM2SEKK7E6AJGM7KXCQWXZVTZQLQ1"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": "{{base_url}}/goal/{{goal_id}}"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Create goal key result",
+			"item": [
+				{
+					"name": "Create Goal",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var response = pm.response.json();",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"",
+									"    pm.collectionVariables.set(\"goal_id\", response.goal.id);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "pk_2144427794_Q5FRM2SEKK7E6AJGM7KXCQWXZVTZQLQ1"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"{{goal_name}}\",\n    \"due_date\": 1568036964079,\n    \"description\": \"{{goal_name}} Description\",\n    \"multiple_owners\": true,\n    \"owners\": [ ],\n    \"color\": \"#32a852\"\n  }"
+						},
+						"url": "{{base_url}}/team/{{team_id}}/goal"
+					},
+					"response": []
+				},
+				{
+					"name": "Create goal key result",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var response = pm.response.json();",
+									"var requestData = JSON.parse(pm.request.body.raw);",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    ",
+									"    pm.collectionVariables.set(\"key_result_id\", response.key_result.id);",
+									"});",
+									"",
+									"pm.test(\"Key result name match the request data name\", function () {",
+									"    pm.expect(response.key_result.name).to.eql(requestData.name);",
+									"});",
+									"",
+									"pm.test(\"Key result type match the request data\", function () {",
+									"    pm.expect(response.key_result.type).to.eql(requestData.type);",
+									"});",
+									"",
+									"pm.test(\"Key result unit match the request data\", function () {",
+									"    pm.expect(response.key_result.unit).to.eql(requestData.unit);",
+									"});",
+									"",
+									"pm.test(\"Goal ID matches the requested goal ID\", function () {",
+									"    var requestedGoalId = pm.variables.get(\"goal_id\"); ",
+									"",
+									"    pm.expect(response.key_result.goal_id).to.eql(requestedGoalId);",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var requestBodies = [",
+									"    {",
+									"        \"name\": \"Key Result boolean\",",
+									"        \"owners\": [],",
+									"        \"type\": \"boolean\",",
+									"        \"steps_start\": null,",
+									"        \"steps_end\": null,",
+									"        \"unit\": null,",
+									"        \"task_ids\": [],",
+									"        \"list_ids\": []",
+									"    },",
+									"    {",
+									"        \"name\": \"Key Result percentage\",",
+									"        \"owners\": [],",
+									"        \"type\": \"percentage\",",
+									"        \"steps_start\": 2,",
+									"        \"steps_end\": 20,",
+									"        \"unit\": \"%\",",
+									"        \"task_ids\": [],",
+									"        \"list_ids\": []",
+									"    },",
+									"    {",
+									"        \"name\": \"Key Result automatic\",",
+									"        \"owners\": [],",
+									"        \"type\": \"automatic\",",
+									"        \"steps_start\": 3,",
+									"        \"steps_end\": 30,",
+									"        \"unit\": \"tasks\",",
+									"        \"task_ids\": [],",
+									"        \"list_ids\": []",
+									"    }",
+									"];",
+									"",
+									"var currentIteration = pm.info.iteration;",
+									"",
+									"var requestBody = requestBodies[currentIteration];",
+									"",
+									"pm.request.body.raw = JSON.stringify(requestBody);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "pk_2144427794_Q5FRM2SEKK7E6AJGM7KXCQWXZVTZQLQ1"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Key Result 1\",\n    \"owners\": [],\n    \"type\": \"number\",\n    \"steps_start\": 4,\n    \"steps_end\": 40,\n    \"unit\": \"number\",\n    \"task_ids\": [],\n    \"list_ids\": []\n }"
+						},
+						"url": "{{base_url}}/goal/{{goal_id}}/key_result"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Goal Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "pk_2144427794_Q5FRM2SEKK7E6AJGM7KXCQWXZVTZQLQ1"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": "{{base_url}}/goal/{{goal_id}}"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Update goal key result",
+			"item": [
+				{
+					"name": "Create Goal",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var response = pm.response.json();",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"",
+									"    pm.collectionVariables.set(\"goal_id\", response.goal.id);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "pk_2144427794_Q5FRM2SEKK7E6AJGM7KXCQWXZVTZQLQ1"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"{{goal_name}}\",\n    \"due_date\": 1568036964079,\n    \"description\": \"{{goal_name}} Description\",\n    \"multiple_owners\": true,\n    \"owners\": [ ],\n    \"color\": \"#32a852\"\n  }"
+						},
+						"url": "{{base_url}}/team/{{team_id}}/goal"
+					},
+					"response": []
+				},
+				{
+					"name": "Create goal key result",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var response = pm.response.json();",
+									"var requestData = JSON.parse(pm.request.body.raw);",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    ",
+									"    pm.collectionVariables.set(\"key_result_id\", response.key_result.id);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var requestBodies = [",
+									"    {",
+									"        \"name\": \"Key Result boolean\",",
+									"        \"owners\": [],",
+									"        \"type\": \"boolean\",",
+									"        \"steps_start\": null,",
+									"        \"steps_end\": null,",
+									"        \"unit\": null,",
+									"        \"task_ids\": [],",
+									"        \"list_ids\": []",
+									"    },",
+									"    {",
+									"        \"name\": \"Key Result percentage\",",
+									"        \"owners\": [],",
+									"        \"type\": \"percentage\",",
+									"        \"steps_start\": 2,",
+									"        \"steps_end\": 20,",
+									"        \"unit\": \"%\",",
+									"        \"task_ids\": [],",
+									"        \"list_ids\": []",
+									"    },",
+									"    {",
+									"        \"name\": \"Key Result automatic\",",
+									"        \"owners\": [],",
+									"        \"type\": \"automatic\",",
+									"        \"steps_start\": 3,",
+									"        \"steps_end\": 30,",
+									"        \"unit\": \"tasks\",",
+									"        \"task_ids\": [],",
+									"        \"list_ids\": []",
+									"    }",
+									"];",
+									"",
+									"var currentIteration = pm.info.iteration;",
+									"",
+									"var requestBody = requestBodies[currentIteration];",
+									"",
+									"pm.request.body.raw = JSON.stringify(requestBody);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "pk_2144427794_Q5FRM2SEKK7E6AJGM7KXCQWXZVTZQLQ1"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Key Result 1\",\n    \"owners\": [],\n    \"type\": \"number\",\n    \"steps_start\": 4,\n    \"steps_end\": 40,\n    \"unit\": \"number\",\n    \"task_ids\": [],\n    \"list_ids\": []\n }"
+						},
+						"url": "{{base_url}}/goal/{{goal_id}}/key_result"
+					},
+					"response": []
+				},
+				{
+					"name": "Update goal key result",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var response = pm.response.json();",
+									"var requestData = JSON.parse(pm.request.body.raw);",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Key result ID matches the requested key result ID\", function () {",
+									"    var requestedKeyResultId = pm.variables.get(\"key_result_id\"); ",
+									"    ",
+									"    pm.expect(response.key_result.id).to.eql(requestedKeyResultId);",
+									"});",
+									"",
+									"pm.test(\"Last action note is 'Target achieved'\", function () {",
+									"    pm.expect(response.key_result.last_action.note).to.eql(requestData.note);",
+									"});",
+									"",
+									"pm.test(\"steps_current match the request\", function () {",
+									"    pm.expect(response.key_result.last_action.steps_taken_float).to.eql(requestData.steps_current);",
+									"});",
+									"",
+									"pm.test(\"Validate that the completed status is not completed\", function () {",
+									"    pm.expect(response.key_result.completed).to.be.false;",
+									"});",
+									"",
+									"pm.test(\"goal_id is present and not null\", function () {",
+									"    pm.expect(response.key_result).to.have.property('goal_id');",
+									"    pm.expect(response.key_result.goal_id).to.not.be.null;",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "pk_2144427794_Q5FRM2SEKK7E6AJGM7KXCQWXZVTZQLQ1"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"steps_current\": 5,\n    \"note\": \"Target achieved\"\n}"
+						},
+						"url": "{{base_url}}/key_result/{{key_result_id}}"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Goal",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "pk_2144427794_Q5FRM2SEKK7E6AJGM7KXCQWXZVTZQLQ1"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": "{{base_url}}/goal/{{goal_id}}"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Delete goal",
+			"item": [
+				{
+					"name": "Create Goal",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var response = pm.response.json();",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"",
+									"    pm.collectionVariables.set(\"goal_id\", response.goal.id);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "pk_2144427794_Q5FRM2SEKK7E6AJGM7KXCQWXZVTZQLQ1"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"{{goal_name}}\",\n    \"due_date\": 1568036964079,\n    \"description\": \"{{goal_name}} Description\",\n    \"multiple_owners\": true,\n    \"owners\": [ ],\n    \"color\": \"#32a852\"\n  }"
+						},
+						"url": "{{base_url}}/team/{{team_id}}/goal"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Goal",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Goal should be deleted\", function (done) {",
+									"    var goal_id = pm.collectionVariables.get(\"goal_id\");",
+									"    pm.sendRequest({",
+									"        url: `https://api.clickup.com/api/v2/goal/${goal_id}`,",
+									"        method: 'GET',",
+									"        header: {",
+									"            'Authorization': 'pk_2144427794_Q5FRM2SEKK7E6AJGM7KXCQWXZVTZQLQ1',",
+									"            'Content-Type': 'application/json'",
+									"        }",
+									"    }, function (_, res) {",
+									"        pm.expect(res).to.have.property('status', 404);",
+									"        pm.expect(res.json()).to.have.property('err', \"Goal Not Found\"); ",
+									"",
+									"        done();",
+									"    });",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "pk_2144427794_Q5FRM2SEKK7E6AJGM7KXCQWXZVTZQLQ1"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": "{{base_url}}/goal/{{goal_id}}"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Delete goal key result",
+			"item": [
+				{
+					"name": "Create Goal",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var response = pm.response.json();",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"",
+									"    pm.collectionVariables.set(\"goal_id\", response.goal.id);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "pk_2144427794_Q5FRM2SEKK7E6AJGM7KXCQWXZVTZQLQ1"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"{{goal_name}}\",\n    \"due_date\": 1568036964079,\n    \"description\": \"{{goal_name}} Description\",\n    \"multiple_owners\": true,\n    \"owners\": [ ],\n    \"color\": \"#32a852\"\n  }"
+						},
+						"url": "{{base_url}}/team/{{team_id}}/goal"
+					},
+					"response": []
+				},
+				{
+					"name": "Create goal key result",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var response = pm.response.json();",
+									"var requestData = JSON.parse(pm.request.body.raw);",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    ",
+									"    pm.collectionVariables.set(\"key_result_id\", response.key_result.id);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var requestBodies = [",
+									"    {",
+									"        \"name\": \"Key Result boolean\",",
+									"        \"owners\": [],",
+									"        \"type\": \"boolean\",",
+									"        \"steps_start\": null,",
+									"        \"steps_end\": null,",
+									"        \"unit\": null,",
+									"        \"task_ids\": [],",
+									"        \"list_ids\": []",
+									"    },",
+									"    {",
+									"        \"name\": \"Key Result percentage\",",
+									"        \"owners\": [],",
+									"        \"type\": \"percentage\",",
+									"        \"steps_start\": 2,",
+									"        \"steps_end\": 20,",
+									"        \"unit\": \"%\",",
+									"        \"task_ids\": [],",
+									"        \"list_ids\": []",
+									"    },",
+									"    {",
+									"        \"name\": \"Key Result automatic\",",
+									"        \"owners\": [],",
+									"        \"type\": \"automatic\",",
+									"        \"steps_start\": 3,",
+									"        \"steps_end\": 30,",
+									"        \"unit\": \"tasks\",",
+									"        \"task_ids\": [],",
+									"        \"list_ids\": []",
+									"    }",
+									"];",
+									"",
+									"var currentIteration = pm.info.iteration;",
+									"",
+									"var requestBody = requestBodies[currentIteration];",
+									"",
+									"pm.request.body.raw = JSON.stringify(requestBody);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "pk_2144427794_Q5FRM2SEKK7E6AJGM7KXCQWXZVTZQLQ1"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Key Result 1\",\n    \"owners\": [],\n    \"type\": \"number\",\n    \"steps_start\": 4,\n    \"steps_end\": 40,\n    \"unit\": \"number\",\n    \"task_ids\": [],\n    \"list_ids\": []\n }"
+						},
+						"url": "{{base_url}}/goal/{{goal_id}}/key_result"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete goal key result",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Key result should be deleted\", function (done) {",
+									"    var goal_id = pm.collectionVariables.get(\"goal_id\");",
+									"    pm.sendRequest({",
+									"        url: `https://api.clickup.com/api/v2/goal/${goal_id}`, ",
+									"        method: 'GET',",
+									"        header: {",
+									"            'Authorization': 'pk_2144427794_Q5FRM2SEKK7E6AJGM7KXCQWXZVTZQLQ1'",
+									"        }",
+									"    }, function (_, res) {",
+									"        const keyResults = res.json().goal.key_results;",
+									"        const keyResultExists = keyResults.some(kr => kr.id === pm.collectionVariables.get(\"key_result_id\"));",
+									"        pm.expect(keyResultExists).to.be.false;",
+									"",
+									"        done();",
+									"    });",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "pk_2144427794_Q5FRM2SEKK7E6AJGM7KXCQWXZVTZQLQ1"
+							}
+						],
+						"url": "{{base_url}}/key_result/{{key_result_id}}"
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "goal_id",
+			"value": ""
+		},
+		{
+			"key": "key_result_id",
+			"value": ""
+		}
+	]
+}
