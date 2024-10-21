@@ -1,0 +1,235 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 7,
+    "passes": 2,
+    "pending": 0,
+    "failures": 5,
+    "start": "2024-10-21T17:18:21.032Z",
+    "end": "2024-10-21T17:18:23.196Z",
+    "duration": 2164,
+    "testsRegistered": 7,
+    "passPercent": 28.57142857142857,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "10ee8336-3ad2-4013-b9d8-96076a2ceaac",
+      "title": "",
+      "fullFile": "cypress/e2e/spaces/spaces.cy.js",
+      "file": "cypress/e2e/spaces/spaces.cy.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "cb339279-9c7a-46fc-bcfc-ccfe03e2d1c0",
+          "title": "Test spaces",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "create space",
+              "fullTitle": "Test spaces create space",
+              "timedOut": null,
+              "duration": 310,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": null,
+              "code": "const randomString = Math.random().toString(36).substring(2, 15);\nconst spaceName = `Space ${randomString}`;\n(0, _spaces.createSpace)(spaceName).then(resp => {\n  expect(resp.status).to.eq(200);\n  expect(resp.body.name).to.eq(spaceName);\n});",
+              "err": {
+                "message": "AssertionError: expected 401 to equal 200",
+                "estack": "AssertionError: expected 401 to equal 200\n    at Context.eval (webpack://cypress_project/./cypress/e2e/spaces/spaces.cy.js:16:35)",
+                "diff": "- 401\n+ 200\n"
+              },
+              "uuid": "4ba9a73f-5b93-40df-bf99-a81a850873aa",
+              "parentUUID": "cb339279-9c7a-46fc-bcfc-ccfe03e2d1c0",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "get all spaces",
+              "fullTitle": "Test spaces get all spaces",
+              "timedOut": null,
+              "duration": 204,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": null,
+              "code": "createMultipleSpaces('New Name', 2).then(() => {\n  (0, _spaces.getAllSpaces)().then(response => {\n    expect(response.status).to.eq(200);\n    const createdSpaceNames = response.body.spaces.filter(space => space.name.startsWith('New Name')).map(space => space.name);\n    expect(createdSpaceNames.length).to.eq(2);\n  });\n});",
+              "err": {
+                "message": "ReferenceError: createMultipleSpaces is not defined",
+                "estack": "ReferenceError: createMultipleSpaces is not defined\n    at Context.eval (webpack://cypress_project/./cypress/e2e/spaces/spaces.cy.js:22:8)",
+                "diff": null
+              },
+              "uuid": "45977ac7-0fb8-4647-9704-8b9b8e61b552",
+              "parentUUID": "cb339279-9c7a-46fc-bcfc-ccfe03e2d1c0",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "get all spaces with invalid teamId",
+              "fullTitle": "Test spaces get all spaces with invalid teamId",
+              "timedOut": null,
+              "duration": 222,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "(0, _spaces.createSpace)('New Name invalid teamId').then(() => {\n  (0, _spaces.getAllSpaces)().then(response => {\n    expect(response.status).to.eq(401);\n    expect(response.body.err).to.eq(\"Team not authorized\");\n  });\n});",
+              "err": {},
+              "uuid": "cf3e36a0-9edf-47cf-9b2b-2df3b40e8cf6",
+              "parentUUID": "cb339279-9c7a-46fc-bcfc-ccfe03e2d1c0",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "get space with invalid spaceId",
+              "fullTitle": "Test spaces get space with invalid spaceId",
+              "timedOut": null,
+              "duration": 188,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "(0, _spaces.getSpace)('dd').then(response => {\n  expect(response.status).to.eq(400);\n});",
+              "err": {},
+              "uuid": "870f5bbe-c7b4-4573-92a4-8f73761588a7",
+              "parentUUID": "cb339279-9c7a-46fc-bcfc-ccfe03e2d1c0",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "create space only with name",
+              "fullTitle": "Test spaces create space only with name",
+              "timedOut": null,
+              "duration": 444,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": null,
+              "code": "(0, _spaces.createSpace)('my name').then(resp => {\n  (0, _spaces.getSpace)(resp.body.id).then(response => {\n    expect(response.status).to.eq(200);\n    expect(response.body.name.startsWith('my name'));\n  });\n});",
+              "err": {
+                "message": "AssertionError: expected 400 to equal 200",
+                "estack": "AssertionError: expected 400 to equal 200\n    at Context.eval (webpack://cypress_project/./cypress/e2e/spaces/spaces.cy.js:52:43)",
+                "diff": "- 400\n+ 200\n"
+              },
+              "uuid": "091f452f-2335-4969-b636-56c6bfb0737b",
+              "parentUUID": "cb339279-9c7a-46fc-bcfc-ccfe03e2d1c0",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "update space name",
+              "fullTitle": "Test spaces update space name",
+              "timedOut": null,
+              "duration": 158,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": null,
+              "code": "const randomString = Math.random().toString(36).substring(2, 15);\nconst newName = `my UPD name ${randomString}`;\ncreateMultipleSpaces('New Name', 1).then(() => {\n  (0, _spaces.getAllSpaces)().then(response => {\n    const firstSpaceId = response.body.spaces[0].id;\n    (0, _spaces.updateSpace)(newName, firstSpaceId).then(resp => {\n      expect(resp.status).to.eq(200);\n      expect(resp.body.name).to.eq(newName);\n    });\n  });\n});",
+              "err": {
+                "message": "ReferenceError: createMultipleSpaces is not defined",
+                "estack": "ReferenceError: createMultipleSpaces is not defined\n    at Context.eval (webpack://cypress_project/./cypress/e2e/spaces/spaces.cy.js:62:8)",
+                "diff": null
+              },
+              "uuid": "4d68ab80-def7-4d5e-be21-b7d9b64bfb3c",
+              "parentUUID": "cb339279-9c7a-46fc-bcfc-ccfe03e2d1c0",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "delete space",
+              "fullTitle": "Test spaces delete space",
+              "timedOut": null,
+              "duration": 469,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": null,
+              "code": "(0, _spaces.createSpace)('for delete').then(resp => {\n  const spaceId = resp.body.id;\n  (0, _spaces.deleteSpace)(spaceId).then(response => {\n    expect(response.status).to.eq(200);\n    (0, _spaces.getSpace)(spaceId).then(getResponse => {\n      expect(getResponse.status).to.eq(404);\n      expect(getResponse.body.err).to.eq(\"Space not found\");\n    });\n  });\n});",
+              "err": {
+                "message": "AssertionError: expected 400 to equal 200",
+                "estack": "AssertionError: expected 400 to equal 200\n    at Context.eval (webpack://cypress_project/./cypress/e2e/spaces/spaces.cy.js:78:43)",
+                "diff": "- 400\n+ 200\n"
+              },
+              "uuid": "08db49e6-5a3c-42cf-a630-6effa6cc92dc",
+              "parentUUID": "cb339279-9c7a-46fc-bcfc-ccfe03e2d1c0",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "cf3e36a0-9edf-47cf-9b2b-2df3b40e8cf6",
+            "870f5bbe-c7b4-4573-92a4-8f73761588a7"
+          ],
+          "failures": [
+            "4ba9a73f-5b93-40df-bf99-a81a850873aa",
+            "45977ac7-0fb8-4647-9704-8b9b8e61b552",
+            "091f452f-2335-4969-b636-56c6bfb0737b",
+            "4d68ab80-def7-4d5e-be21-b7d9b64bfb3c",
+            "08db49e6-5a3c-42cf-a630-6effa6cc92dc"
+          ],
+          "pending": [],
+          "skipped": [],
+          "duration": 1995,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.0.1"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": true,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "7.1.3"
+    },
+    "marge": {
+      "options": null,
+      "version": "6.2.0"
+    }
+  }
+}
