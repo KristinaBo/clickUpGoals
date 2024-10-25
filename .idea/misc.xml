@@ -3,4 +3,5 @@
   <component name="JavaScriptSettings">
     <option name="languageLevel" value="FLOW" />
   </component>
+  <component name="ProjectRootManager" version="2" project-jdk-name="temurin-21 (2)" project-jdk-type="JavaSDK" />
 </project>
