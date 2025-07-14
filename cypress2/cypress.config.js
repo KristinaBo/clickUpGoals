@@ -19,11 +19,11 @@ module.exports = defineConfig({
     },
     // Configure your E2E tests here
     specPattern: "cypress/e2e/**/*.{cy,spec}.{js,ts}",
-    baseUrl: "https://api.clickup.com/api/v2",
+    baseUrl: "**",
     env: {
       allureLogCypress:false,
       allureReuseAfterSpec: true,
-      token: 'pk_81869430_VY7J4OYZ09OS5ZV3OYEOSHZK5SEE0LO3'
+      token: '**'
     }
   },
 })
